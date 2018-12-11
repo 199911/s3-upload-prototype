@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { BUCKET_REGION, BUCKET_NAME } = process.env;
+const { BUCKET_REGION, BUCKET_NAME, FILE_PATH } = process.env;
 
 const uploadAsync = require('./uploadAsync.js')({
   region: BUCKET_REGION,
@@ -9,7 +9,7 @@ const uploadAsync = require('./uploadAsync.js')({
 
 const main = async () => {
   try {
-    const res = await uploadAsync('file.mp4', './file.mp4', 8 * 1024 * 1024, 2);
+    const res = await uploadAsync('video.mp4', FILE_PATH, 8 * 1024 * 1024, 2);
     console.log(res);
   } catch (err) {
     console.error(err);
