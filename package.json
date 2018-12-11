@@ -1,0 +1,12 @@
+{
+  "name": "s3-upload-prototype",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@sunday:199911/s3-upload-prototype.git",
+  "author": "KU Lok Sun <sundaykuloksun@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.373.0",
+    "dotenv": "^6.2.0"
+  }
+}
