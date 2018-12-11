@@ -1,5 +1,9 @@
+const Promise = require("bluebird");
 // Load the AWS SDK for Node.js
 const AWS = require("aws-sdk");
+// Work arround on bluebird promisify issue with AWS
+// http://goo.gl/MqrFmX\u000a
+AWS.config.setPromisesDependency(Promise);
 const fs = require("fs");
 
 const uploadAsyncFactory = ({region, bucket}) => {
@@ -7,6 +11,7 @@ const uploadAsyncFactory = ({region, bucket}) => {
     region,
     params: { Bucket: bucket }
   });
+
   const uploadAsync = async (fileName, filePath, partSize) => {
     const { size: fileSize } = fs.statSync(filePath);
     const partNum = Math.ceil(fileSize / partSize);
