@@ -1,0 +1,3 @@
+#! /bin/bash
+source .env
+aws s3api list-multipart-uploads --bucket $BUCKET_NAME | jq '.Uploads | map({Key, UploadId})'

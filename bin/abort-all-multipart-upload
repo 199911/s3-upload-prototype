@@ -1,0 +1,6 @@
+#! /bin/bash
+source .env
+
+./bin/list-multipart-upload \
+  | jq -r 'map("aws s3api abort-multipart-upload --bucket $BUCKET_NAME --key " + .Key + " --upload-id " + .UploadId) | join("\n")'
+echo Copy the commands and run in shell
