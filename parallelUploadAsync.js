@@ -33,6 +33,18 @@ const uploadAsyncFactory = ({region, bucket}) => {
       });
       partStreams.push(fileStream);
     }
+
+    // Write file chunks to disk
+    // const promises = partStreams.map((stream, index) => {
+    //   const writeStream = fs.createWriteStream(`part-${index}`, { encoding: 'binary' });
+    //   stream.pipe(writeStream);
+    //   return new Promise((resolve, reject) => {
+    //     stream.on('end', () => resolve());
+    //     stream.on('error', reject);
+    //   })
+    // })
+    // await Promise.all(promises);
+
     return partStreams;
   }
   return uploadAsync;
