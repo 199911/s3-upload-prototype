@@ -19,9 +19,12 @@ const uploadAsyncFactory = ({region, bucket}) => {
     // Split a file into several file streams
     const partStreams = [];
     for (let i = 0; i < partNum; ++i) {
+      const start = i * partSize;
+      const end = Math.min((i + 1) * partSize - 1, fileSize - 1);
       const fileStream = fs.createReadStream(
         filePath,
-        { start: i * partSize, end: partSize }
+        // Start and end is inclusive
+        { start, end }
       );
       const tag = `[Part ${i+1}]`;
       fileStream.on("error", err => {
