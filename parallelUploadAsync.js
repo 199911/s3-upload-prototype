@@ -45,7 +45,51 @@ const uploadAsyncFactory = ({region, bucket}) => {
     // })
     // await Promise.all(promises);
 
-    return partStreams;
+    // Create multipart upload
+    const multipart = await s3.createMultipartUpload({Key: fileName}).promise();
+    console.log("Got upload ID", multipart.UploadId);
+
+    // Upload parts
+    const promises = partStreams.map(async (stream, index) => {
+      // PartNumber is 1 base, [1, 10000]
+      const partNumber = index + 1;
+      // As stream start and end is inclusive, end - start is off by one
+      const streamLength = stream.end - stream.start + 1;
+      const params = {
+        Key: fileName,
+        PartNumber: `${partNumber}`,
+        UploadId: multipart.UploadId,
+        Body: stream,
+        // When using stream, if ContentLength not specified,
+        // will receive RequestTimeout
+        // https://github.com/aws/aws-sdk-js/issues/281
+        ContentLength: streamLength,
+      };
+      console.log(`Uploading part #${partNumber}, ${streamLength} bytes`);
+      const data = await s3.uploadPart(params).promise();
+      console.log(`Part #${partNumber}: `, JSON.stringify(data, null, 2));
+      return {
+        ...data,
+        PartNumber: partNumber,
+      };
+    })
+    const parts = await Promise.all(promises);
+
+    console.log(parts);
+
+
+    // Complete multipart upload
+    const data = await s3.completeMultipartUpload({
+      Key: fileName,
+      MultipartUpload: {
+        // Parts is in format of [{ETag,PartNumber}, ..]
+        Parts: parts,
+      },
+      UploadId: multipart.UploadId,
+    }).promise();
+    console.log('Final upload data:', JSON.stringify(data, null, 2));
+
+    return data;
   }
   return uploadAsync;
 }
